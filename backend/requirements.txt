@@ -1,8 +1,17 @@
-blinker==1.9.0
-click==8.3.0
-Flask==3.1.2
-itsdangerous==2.2.0
-Jinja2==3.1.6
-MarkupSafe==3.0.3
-numpy==2.3.4
-Werkzeug==3.1.3
+# === MMV backend runtime deps ===
+# Keep this file small: list only the packages you import directly.
+# Flask will bring its own compatible transitive deps (Werkzeug, Jinja2, etc).
+
+Flask~=3.1          # Web framework (routing, request/response, dev server)
+flask-cors~=4.0     # CORS headers so the React/Vite frontend can call the API
+numpy~=2.3          # Vectorized simulation math (positions, velocities, histograms)
+
+# this file is just a list of the backend's direct Python dependencies.
+# inside are only the core packages we actually import:
+# - Flask for the web server and routes
+# - flask-cors for allowing frontend requests
+# - numpy for the molecule simulation math
+
+
+
+# Once backend is fully done run this: pip install -r backend/requirements.txt
