@@ -20,3 +20,4 @@ class SimState:
 
 # this file is just a data container for the molecules' positions, velocities, and constants
 # inside is only the definition of SimState
+#good for now
