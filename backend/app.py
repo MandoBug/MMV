@@ -1,26 +1,55 @@
-from flask import Flask, jsonify, request
-from math import sqrt
-import numpy as np
+# this is the main entry point for the backend
+# it creates the Flask app, enables CORS, initializes the simulation engine,
+# and registers all the API routes (control, config, snapshot, stream)
 
-app = Flask(__name__)
+from flask import Flask
+from flask_cors import CORS
 
-# simple health check
-@app.get("/api/health")
-def health():
-    return jsonify(status="ok")
+# import settings and simulation engine
+from .mmv.core.settings import settings
+from .mmv.sim.engine import SimulationEngine
 
-# demo: compute a histogram of random speeds (placeholder for sim)
-@app.post("/api/histogram")
-def histogram():
-    body = request.get_json(force=True) or {}
-    n = int(body.get("n", 500))
-    rng = np.random.default_rng(42)
-    v = rng.rayleigh(scale=1.0, size=n)  # rough 2D speed-like
-    hist, edges = np.histogram(v, bins=30, range=(0, v.max()))
-    return jsonify(
-        bins=hist.tolist(),
-        edges=edges.tolist()
+# import the blueprints
+from .mmv.api.control import make_blueprint as control_bp
+from .mmv.api.config import make_blueprint as config_bp
+from .mmv.api.snapshot import make_blueprint as snapshot_bp
+from .mmv.api.stream import make_blueprint as stream_bp
+
+
+def create_app():
+    """App factory — sets up the MMV backend."""
+    app = Flask(__name__)
+
+    # enable CORS for frontend requests (React/Vite)
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
+
+    # create a single simulation engine instance
+    engine = SimulationEngine(
+        N=settings.N,
+        L=settings.L,
+        dt=settings.DT,
+        m=settings.MASS,
+        kB=settings.KB,
+        seed=settings.SEED,
+        bins=settings.HIST_BINS,
     )
 
-if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5001, debug=True)
+    # register all API blueprints with their routes
+    app.register_blueprint(config_bp(engine),  url_prefix="/api/config")
+    app.register_blueprint(control_bp(engine), url_prefix="/api/control")
+    app.register_blueprint(snapshot_bp(engine),url_prefix="/api/snapshot")
+    app.register_blueprint(stream_bp(engine, settings.FPS), url_prefix="/api/stream")
+
+    # small root route for quick sanity check
+    @app.get("/")
+    def root():
+        return {"status": "ok", "message": "MMV backend is running"}
+
+    return app
+
+
+# run in dev mode with:
+# flask --app backend.app:create_app --debug run
+
+# this file is the main startup point for the backend
+# inside it, we build the Flask app, attach all API routes, and start the simulation engine
