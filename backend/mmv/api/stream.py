@@ -14,10 +14,12 @@ def make_blueprint(engine, fps: int):
                 if engine._running:
                     yield engine.step()
                 else:
+                    import time 
+                    time.sleep(0.05)
                     # send minimal heartbeat so frontend knows connection is alive
                     yield {"t": engine.state.t}
         return sse_stream(frames, fps=fps)
-
+    
     return bp
 
 # this file is just for live streaming the simulation

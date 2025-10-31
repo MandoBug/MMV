@@ -33,6 +33,7 @@ def create_app():
         seed=settings.SEED,
         bins=settings.HIST_BINS,
     )
+    engine.start()
 
     # register all API blueprints with their routes
     app.register_blueprint(config_bp(engine),  url_prefix="/api/config")

@@ -4,25 +4,24 @@ from flask import Blueprint, request
 def make_blueprint(engine):
     bp = Blueprint("control", __name__)
 
-    @bp.post("/start")
+    @bp.route("/start", methods=["POST", "GET"])
     def start():
         engine.start()
         return ("", 204)
 
-    @bp.post("/pause")
+    @bp.route("/pause", methods=["POST", "GET"])
     def pause():
         engine.pause()
         return ("", 204)
 
-    @bp.post("/reset")
+    @bp.route("/reset", methods=["POST", "GET"])
     def reset():
-        seed = None
-        if request.is_json:
-            seed = request.json.get("seed")
+        seed = request.json.get("seed") if request.is_json else None
         engine.reset(seed)
         return ("", 204)
 
     return bp
+
 
 # this file is just for simulation control routes
 # inside are endpoints that call engine.start(), engine.pause(), and engine.reset()
