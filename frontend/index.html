@@ -2,12 +2,23 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <title>Molecular Motion Visualizer</title>
   </head>
   <body>
+    <!-- Root div where React mounts -->
     <div id="root"></div>
+
+    <!-- Vite loads our entry file -->
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
+
+<!--
+purpose: base HTML file for the frontend
+- React mounts into <div id="root">
+- Vite automatically injects our JS bundle in dev/build
+
+this file is just the entry shell for the web app.
+inside is only the #root container and the script that boots React.
+-->
